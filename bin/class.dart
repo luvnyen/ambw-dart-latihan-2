@@ -9,12 +9,12 @@ abstract class Person {
   set noHP(String noHP);
 }
 
-class CivitasAkademik implements Person {
+class CivitasAkademika implements Person {
   String? _nama;
   int _umur = 0;
   String? _noHP;
 
-  CivitasAkademik(this._nama, this._umur, this._noHP);
+  CivitasAkademika(this._nama, this._umur, this._noHP);
 
   @override
   String get nama => _nama!;
@@ -38,7 +38,7 @@ class CivitasAkademik implements Person {
   }
 }
 
-class Mahasiswa extends CivitasAkademik {
+class Mahasiswa extends CivitasAkademika {
   int _sks = 0;
   String? _status;
   double _ips = 0;
@@ -53,9 +53,9 @@ class Mahasiswa extends CivitasAkademik {
     if (N >= 2 && N <= 24) {
       _sks += N;
     } else if (N < 2) {
-      print("SKS tidak boleh kurang dari 2!");
+      print("Jumlah SKS yang diambil tidak boleh kurang dari 2!");
     } else {
-      print("SKS tidak boleh lebih dari 24!");
+      print("Jumlah SKS yang diambil tidak boleh lebih dari 24!");
     }
   }
 
@@ -75,7 +75,7 @@ class Mahasiswa extends CivitasAkademik {
   }
 }
 
-class Pegawai extends CivitasAkademik {
+class Pegawai extends CivitasAkademika {
   int _gaji = 0;
   int _tunjanganKehadiran = 0;
 
@@ -83,8 +83,16 @@ class Pegawai extends CivitasAkademik {
       String nama, int umur, String noHP, this._gaji, this._tunjanganKehadiran)
       : super(nama, umur, noHP);
 
+  int get gaji => _gaji;
   set gaji(int gaji) {
     _gaji = gaji;
+  }
+
+  int get tunjanganKehadiran => _tunjanganKehadiran;
+  set tunjanganKehadiran(int tunjanganKehadiran) {
+    tunjanganKehadiran > 0
+        ? _tunjanganKehadiran = tunjanganKehadiran
+        : print("Tunjangan kehadiran tidak boleh bernilai negatif!");
   }
 }
 
@@ -99,28 +107,45 @@ class Dosen extends Pegawai {
   set sksDiampu(int sksDiampu) {
     _sksDiampu = sksDiampu;
   }
+}
 
+abstract class Penghasilan {
+  int getPenghasilan();
+}
+
+class DosenLB extends Dosen implements Penghasilan {
+  DosenLB(String nama, int umur, String noHP, int gaji, int tunjanganKehadiran,
+      int sksDiampu)
+      : super(nama, umur, noHP, gaji, tunjanganKehadiran, sksDiampu);
+
+  @override
   int getPenghasilan() {
-    return _gaji + (_sksDiampu * 40000) + _tunjanganKehadiran;
+    _tunjanganKehadiran = 0;
+    return _sksDiampu * 40000 + _gaji + _tunjanganKehadiran;
   }
 }
 
-class DosenLB extends Dosen {
-  DosenLB(String nama, int umur, String noHP, int gaji, int tunjanganKehadiran,
-      int sksDiampu)
-      : super(nama, umur, noHP, gaji, 0, sksDiampu);
-}
-
-class DosenTamu extends Dosen {
+class DosenTamu extends Dosen implements Penghasilan {
   DosenTamu(String nama, int umur, String noHP, int gaji,
       int tunjanganKehadiran, int sksDiampu)
-      : super(nama, umur, noHP, 0, tunjanganKehadiran, sksDiampu);
+      : super(nama, umur, noHP, gaji, tunjanganKehadiran, sksDiampu);
+
+  @override
+  int getPenghasilan() {
+    _gaji = 0;
+    return _sksDiampu * 40000 + _gaji + _tunjanganKehadiran;
+  }
 }
 
-class DosenTetap extends Dosen {
+class DosenTetap extends Dosen implements Penghasilan {
   DosenTetap(String nama, int umur, String noHP, int gaji,
       int tunjanganKehadiran, int sksDiampu)
       : super(nama, umur, noHP, gaji, tunjanganKehadiran, sksDiampu);
+
+  @override
+  int getPenghasilan() {
+    return _sksDiampu * 40000 + _gaji + _tunjanganKehadiran;
+  }
 }
 
 class Staff extends Pegawai {
@@ -128,16 +153,12 @@ class Staff extends Pegawai {
   int _jumlahAbsensi = 0;
 
   Staff(String nama, int umur, String noHP, int gaji, int tunjanganKehadiran,
-      this._jatahCuti, this._jumlahAbsensi)
+      this._jumlahAbsensi)
       : super(nama, umur, noHP, gaji, tunjanganKehadiran);
 
   int get jatahCuti => _jatahCuti;
   void cuti() {
-    if (_jatahCuti > 0) {
-      _jatahCuti--;
-    } else {
-      print("Jatah cuti telah habis!");
-    }
+    _jatahCuti > 0 ? _jatahCuti-- : print("Jatah cuti telah habis!");
   }
 
   int get jumlahAbsensi => _jumlahAbsensi;
@@ -146,6 +167,7 @@ class Staff extends Pegawai {
   }
 
   int getTotalGaji() {
-    return _gaji + (_jumlahAbsensi * _tunjanganKehadiran);
+    return ((_jumlahAbsensi / 30).floor() * _gaji) +
+        (_jumlahAbsensi * _tunjanganKehadiran);
   }
 }
