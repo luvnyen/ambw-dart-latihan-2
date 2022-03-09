@@ -5,16 +5,16 @@ abstract class Person {
   int get umur;
   set umur(int umur);
 
-  String get no_hp;
-  set no_hp(String no_hp);
+  String get noHP;
+  set noHP(String noHP);
 }
 
 class CivitasAkademik implements Person {
   String? _nama;
   int _umur = 0;
-  String? _no_hp;
+  String? _noHP;
 
-  CivitasAkademik(this._nama, this._umur, this._no_hp);
+  CivitasAkademik(this._nama, this._umur, this._noHP);
 
   @override
   String get nama => _nama!;
@@ -31,10 +31,10 @@ class CivitasAkademik implements Person {
   }
 
   @override
-  String get no_hp => _no_hp!;
+  String get noHP => _noHP!;
   @override
-  set no_hp(String no_hp) {
-    _no_hp = no_hp;
+  set noHP(String noHP) {
+    _noHP = noHP;
   }
 }
 
@@ -44,9 +44,9 @@ class Mahasiswa extends CivitasAkademik {
   double _ips = 0;
   double _ipk = 0;
 
-  Mahasiswa(String nama, int umur, String no_hp, this._sks, this._status,
+  Mahasiswa(String nama, int umur, String noHP, this._sks, this._status,
       this._ips, this._ipk)
-      : super(nama, umur, no_hp);
+      : super(nama, umur, noHP);
 
   int get sks => _sks;
   void ambilSKS(int N) {
@@ -77,9 +77,11 @@ class Mahasiswa extends CivitasAkademik {
 
 class Pegawai extends CivitasAkademik {
   int _gaji = 0;
+  int _tunjanganKehadiran = 0;
 
-  Pegawai(String nama, int umur, String no_hp, this._gaji)
-      : super(nama, umur, no_hp);
+  Pegawai(
+      String nama, int umur, String noHP, this._gaji, this._tunjanganKehadiran)
+      : super(nama, umur, noHP);
 
   set gaji(int gaji) {
     _gaji = gaji;
@@ -87,56 +89,63 @@ class Pegawai extends CivitasAkademik {
 }
 
 class Dosen extends Pegawai {
-  int _sks_diampu = 0;
-  int _tunjangan_kehadiran = 0;
+  int _sksDiampu = 0;
 
-  Dosen(String nama, int umur, int gaji, String no_hp, this._sks_diampu,
-      this._tunjangan_kehadiran)
-      : super(nama, umur, no_hp, gaji);
+  Dosen(String nama, int umur, String noHP, int gaji, int tunjanganKehadiran,
+      this._sksDiampu)
+      : super(nama, umur, noHP, gaji, tunjanganKehadiran);
 
-  int get sks_diampu => _sks_diampu;
-  set sks_diampu(int sks_diampu) {
-    _sks_diampu = sks_diampu;
+  int get sksDiampu => _sksDiampu;
+  set sksDiampu(int sksDiampu) {
+    _sksDiampu = sksDiampu;
   }
 
   int getPenghasilan() {
-    return _gaji + (_sks_diampu * 40000) + _tunjangan_kehadiran;
+    return _gaji + (_sksDiampu * 40000) + _tunjanganKehadiran;
   }
 }
 
 class DosenLB extends Dosen {
-  DosenLB(String nama, int umur, int gaji, String no_hp, int sks_diampu,
-      int tunjangan_kehadiran)
-      : super(nama, umur, gaji, no_hp, sks_diampu, 0);
+  DosenLB(String nama, int umur, String noHP, int gaji, int tunjanganKehadiran,
+      int sksDiampu)
+      : super(nama, umur, noHP, gaji, 0, sksDiampu);
 }
 
 class DosenTamu extends Dosen {
-  DosenTamu(String nama, int umur, int gaji, String no_hp, int sks_diampu,
-      int tunjangan_kehadiran)
-      : super(nama, umur, 0, no_hp, sks_diampu, tunjangan_kehadiran);
+  DosenTamu(String nama, int umur, String noHP, int gaji,
+      int tunjanganKehadiran, int sksDiampu)
+      : super(nama, umur, noHP, 0, tunjanganKehadiran, sksDiampu);
 }
 
 class DosenTetap extends Dosen {
-  DosenTetap(String nama, int umur, int gaji, String no_hp, int sks_diampu,
-      int tunjangan_kehadiran)
-      : super(nama, umur, gaji, no_hp, sks_diampu, tunjangan_kehadiran);
+  DosenTetap(String nama, int umur, String noHP, int gaji,
+      int tunjanganKehadiran, int sksDiampu)
+      : super(nama, umur, noHP, gaji, tunjanganKehadiran, sksDiampu);
 }
 
 class Staff extends Pegawai {
-  int _cuti = 0;
-  int _jumlah_absensi = 0;
-  int _tunjangan_kehadiran = 0;
+  int _jatahCuti = 12;
+  int _jumlahAbsensi = 0;
 
-  Staff(String nama, int umur, String no_hp, this._cuti, this._jumlah_absensi)
-      : super(nama, umur, no_hp, _cuti);
+  Staff(String nama, int umur, String noHP, int gaji, int tunjanganKehadiran,
+      this._jatahCuti, this._jumlahAbsensi)
+      : super(nama, umur, noHP, gaji, tunjanganKehadiran);
 
-  int get cuti => _cuti;
-  set cuti(int cuti) {
-    _cuti = cuti;
+  int get jatahCuti => _jatahCuti;
+  void cuti() {
+    if (_jatahCuti > 0) {
+      _jatahCuti--;
+    } else {
+      print("Jatah cuti telah habis!");
+    }
   }
 
-  int get jumlah_absensi => _jumlah_absensi;
+  int get jumlahAbsensi => _jumlahAbsensi;
   void absensi() {
-    _jumlah_absensi++;
+    _jumlahAbsensi++;
+  }
+
+  int getTotalGaji() {
+    return _gaji + (_jumlahAbsensi * _tunjanganKehadiran);
   }
 }
